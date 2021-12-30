@@ -3,6 +3,7 @@ package nextion
 import (
 	"bytes"
 	"encoding/hex"
+	"errors"
 	"fmt"
 	"log"
 	"time"
@@ -200,6 +201,23 @@ func (n *nextion) Close() error {
 	return n.port.Close()
 }
 
+func (n *nextion) SetBaud(baud int) error {
+	if n.port == nil {
+		return errors.New("not initialized")
+	}
+
+	n.Send(fmt.Sprintf("baud=%d", baud), RET_ACTION_OK)
+
+	mode := serial.Mode{
+		BaudRate: baud,
+		DataBits: 8,
+		StopBits: serial.OneStopBit,
+		Parity:   serial.NoParity,
+	}
+
+	return n.port.SetMode(&mode)
+}
+
 func (n *nextion) NewPage(id uint8, name string) Page {
 	p := &page{
 		nextion:      n,
@@ -225,6 +243,7 @@ func (n *nextion) ShowPage(id uint8) {
 type Nextion interface {
 	Init(baud int) error
 	Close() error
+	SetBaud(baud int) error
 	Send(s string, action RetAction) CommandResult
 	NewPage(id uint8, name string) Page
 	ShowPage(id uint8)

@@ -105,6 +105,11 @@ func main() {
 
 	defer nxt.Close()
 
+	err = nxt.SetBaud(57600)
+	if err != nil {
+		log.Print("SetBaud error: ", err)
+	}
+
 	page := nxt.NewPage(0, "mainPage")
 
 	gauge = page.NewNumber(11, "z0")
