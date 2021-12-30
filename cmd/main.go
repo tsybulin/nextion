@@ -105,6 +105,8 @@ func main() {
 
 	defer nxt.Close()
 
+	nxt.SetDim(33)
+
 	err = nxt.SetBaud(57600)
 	if err != nil {
 		log.Print("SetBaud error: ", err)
