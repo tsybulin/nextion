@@ -84,8 +84,17 @@ func (n *nextion) inpHandler() {
 	total := make([]byte, 0)
 
 	for {
+		if n.port == nil {
+			return
+		}
+
 		c, err := n.port.Read(buffer)
 		if err != nil {
+			if pe, ok := err.(*serial.PortError); ok {
+				if pe.Code() == serial.PortClosed {
+					return
+				}
+			}
 			log.Println("port read error:", err)
 		}
 
@@ -198,6 +207,9 @@ func (n *nextion) Init(baud int) error {
 func (n *nextion) Close() error {
 	close(n.output)
 	close(n.result)
+	defer func() {
+		n.port = nil
+	}()
 	return n.port.Close()
 }
 
