@@ -222,6 +222,30 @@ func (n *nextion) SetDim(dim int) {
 	n.Send(fmt.Sprintf("dim=%d", dim), RET_ACTION_OK)
 }
 
+func (n *nextion) SetCurrentDateTime() error {
+	now := time.Now()
+	if rslt := n.Send(fmt.Sprintf("rtc0=%d", now.Year()), RET_ACTION_OK); rslt.Result != INSTRUCTION_SUCCESS {
+		return errors.New("year set error")
+	}
+
+	if rslt := n.Send(fmt.Sprintf("rtc1=%d", now.Month()), RET_ACTION_OK); rslt.Result != INSTRUCTION_SUCCESS {
+		return errors.New("month set error")
+	}
+
+	if rslt := n.Send(fmt.Sprintf("rtc2=%d", now.Day()), RET_ACTION_OK); rslt.Result != INSTRUCTION_SUCCESS {
+		return errors.New("day set error")
+	}
+
+	if rslt := n.Send(fmt.Sprintf("rtc3=%d", now.Hour()), RET_ACTION_OK); rslt.Result != INSTRUCTION_SUCCESS {
+		return errors.New("hour set error")
+	}
+
+	if rslt := n.Send(fmt.Sprintf("rtc4=%d", now.Minute()), RET_ACTION_OK); rslt.Result != INSTRUCTION_SUCCESS {
+		return errors.New("minute set error")
+	}
+	return nil
+}
+
 func (n *nextion) NewPage(id uint8, name string) Page {
 	p := &page{
 		nextion:      n,
@@ -249,6 +273,7 @@ type Nextion interface {
 	Close() error
 	SetBaud(baud int) error
 	SetDim(dim int)
+	SetCurrentDateTime() error
 	Send(s string, action RetAction) CommandResult
 	NewPage(id uint8, name string) Page
 	ShowPage(id uint8)
