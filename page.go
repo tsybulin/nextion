@@ -126,4 +126,5 @@ type Page interface {
 	NewText(id uint8, name string) Text
 	NewNumber(id uint8, name string) Number
 	NewButton(id uint8, name string) Button
+	NewPicture(id uint8, name string) Picture
 }
