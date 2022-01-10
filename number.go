@@ -17,11 +17,11 @@ func (n *number) ObjectId() uint8 {
 	return n.id
 }
 
-func (n *number) SetValue(v uint32) {
+func (n *number) SetValue(v int32) {
 	n.nextion.Send(fmt.Sprintf("%s.val=%d", n.objname, v), RET_ACTION_OK)
 }
 
-func (n *number) Value() (uint32, error) {
+func (n *number) Value() (int32, error) {
 	ret := n.nextion.Send(fmt.Sprintf("get %s.val", n.objname), RET_NUMERIC_DATA)
 	if ret.Result != NUMERIC_DATA {
 		return 0, errors.New("command error")
@@ -69,8 +69,8 @@ func (n *number) AttachPush(target string, handler TouchHandler) {
 type Number interface {
 	Object
 	Touchable
-	SetValue(v uint32)
-	Value() (uint32, error)
+	SetValue(v int32)
+	Value() (int32, error)
 	SetVisible(visible bool)
 	SetBackgroundColor(bco Color565)
 	SetTextColor(pco Color565)

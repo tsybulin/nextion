@@ -20,7 +20,7 @@ var (
 )
 
 var gauge nextion.Number
-var q uint32
+var q int32
 var busy = false
 
 func progress(b nextion.Button) {

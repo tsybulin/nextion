@@ -13,7 +13,7 @@ import (
 
 type CommandResult struct {
 	Result byte
-	Int    uint32
+	Int    int32
 	Str    string
 }
 
@@ -122,7 +122,7 @@ func (n *nextion) inpHandler() {
 					// log.Printf("Nextion.inpHandler NUMERIC_DATA %s", s)
 					n.result <- CommandResult{
 						Result: NUMERIC_DATA,
-						Int:    uint32(total[4])<<24 + uint32(total[3])<<16 + uint32(total[2])<<8 + uint32(total[1]),
+						Int:    int32(total[4])<<24 + int32(total[3])<<16 + int32(total[2])<<8 + int32(total[1]),
 					}
 				} else if total[0] == STRING_DATA {
 					// log.Printf("Nextion.inpHandler STRING_DATA %s", s)
