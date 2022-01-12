@@ -3,6 +3,7 @@ package nextion
 const (
 	INSTRUCTION_SUCCESS byte = 0x01
 	INSTRUCTION_INVALID byte = 0x00
+	VARIABLE_INVALID    byte = 0x1a
 	ASSIGNMENT_ERROR    byte = 0x1c
 	TOUCH_EVENT         byte = 0x65
 	STRING_DATA         byte = 0x70

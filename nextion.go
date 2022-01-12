@@ -44,7 +44,7 @@ func (n *nextion) Send(s string, action RetAction) CommandResult {
 	n.output <- s
 	rslt := <-n.result
 	if rslt.Result == INSTRUCTION_SUCCESS {
-		//log.Printf("Nextion.Send %s result OK", s)
+		// log.Printf("Nextion.Send %s result OK", s)
 		return rslt
 	}
 
@@ -58,7 +58,7 @@ func (n *nextion) Send(s string, action RetAction) CommandResult {
 		return rslt
 	}
 
-	log.Printf("Nextion.Send %s result error: %02x", s, rslt.Result)
+	// log.Printf("Nextion.Send %s result error: %02x", s, rslt.Result)
 	return rslt
 }
 
@@ -100,7 +100,7 @@ func (n *nextion) inpHandler() {
 
 		if c > 0 {
 			total = append(total, buffer[0:c]...)
-			//log.Printf("Nextion.inpHandler got %d bytes: %s", c, hex.EncodeToString(buffer[0:c]))
+			// log.Printf("Nextion.inpHandler got %d bytes: %s", c, hex.EncodeToString(buffer[0:c]))
 
 			for {
 				i := bytes.Index(total, endNextionMessage)
@@ -113,10 +113,13 @@ func (n *nextion) inpHandler() {
 					// log.Println("Nextion.inpHandler ", s, "Instruction success")
 					n.result <- CommandResult{Result: INSTRUCTION_SUCCESS}
 				} else if total[0] == INSTRUCTION_INVALID {
-					log.Println("Nextion.inpHandler ", s, "Instruction invalid")
+					// log.Println("Nextion.inpHandler ", s, "Instruction invalid")
 					n.result <- CommandResult{Result: INSTRUCTION_INVALID}
+				} else if total[0] == VARIABLE_INVALID {
+					// log.Println("Nextion.inpHandler ", s, "Variable invalid")
+					n.result <- CommandResult{Result: VARIABLE_INVALID}
 				} else if total[0] == ASSIGNMENT_ERROR {
-					log.Println("Nextion.inpHandler ", s, "Assignment error")
+					// log.Println("Nextion.inpHandler ", s, "Assignment error")
 					n.result <- CommandResult{Result: ASSIGNMENT_ERROR}
 				} else if total[0] == NUMERIC_DATA {
 					// log.Printf("Nextion.inpHandler NUMERIC_DATA %s", s)
@@ -164,7 +167,7 @@ func (n *nextion) inpHandler() {
 						}
 					}
 				} else {
-					log.Print(s, "Unknown")
+					log.Print(s, " : Unknown")
 				}
 
 				total = total[i+3:]
@@ -194,6 +197,23 @@ func (n *nextion) Init(baud int) error {
 	err = port.SetReadTimeout(time.Millisecond * 200)
 	if err != nil {
 		return err
+	}
+
+	{
+		bts := stringToHexBytes(" ")
+		n.port.Write(bts)
+
+		bts = stringToHexBytes("connect")
+		n.port.Write(bts)
+
+		buffer := make([]byte, 255)
+
+		for {
+			c, _ := n.port.Read(buffer)
+			if c == 0 {
+				break
+			}
+		}
 	}
 
 	go n.outHandler()
